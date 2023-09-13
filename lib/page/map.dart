@@ -423,7 +423,7 @@ class MapState extends State<Mymap> {
       home: Scaffold(
           floatingActionButton: FloatingActionButton.small(
             onPressed: () => _displayDraggableScrollableSheet(context),
-            backgroundColor: Colors.pink.shade300,
+            backgroundColor: Colors.red[600],
             child: Icon(Icons.search),
           ),
           body: Column(
