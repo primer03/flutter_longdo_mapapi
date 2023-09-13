@@ -53,31 +53,58 @@ class MapState extends State<Mymap> {
       // print( is List ? true : false);
       print(datax.length);
       if (datax.length > 0) {
-        dataMark.add(datax[0]);
-        // print("dataMark ${dataMark}");
-        // print("daramark length ${dataMark.length}");
-        var name = List.from(datax.map((e) => e['name']));
-        print(name is List ? true : false);
-        print(name);
-        setState(() {
-          dataMark = dataMark;
-          messenger.currentState?.showSnackBar(
-            SnackBar(
-              content: Text(name.toString()),
-            ),
-          );
-        });
-        mark = map.currentState?.LongdoObject(
-          "Marker",
-          args: [
-            {
-              "lon": datax[0]['lon'],
-              "lat": datax[0]['lat'],
-            },
-          ],
-        );
-        if (mark != null) {
-          map.currentState?.call("Overlays.add", args: [mark!]);
+        if (dataMark.length == 0) {
+          dataMark.add(datax[0]);
+          setState(() {
+            messenger.currentState?.showSnackBar(
+              SnackBar(
+                content: Text(datax[0]['name'] + " ถูกเพิ่มแล้ว"),
+              ),
+            );
+            dataMark = dataMark;
+          });
+          add_mark(datax[0]['lat'], datax[0]['lon']);
+        } else {
+          var check =
+              dataMark.where((element) => element['name'] == datax[0]['name']);
+          print(check.length);
+          if (check.length == 0) {
+            setState(() {
+              messenger.currentState?.showSnackBar(
+                SnackBar(
+                  content: Text(datax[0]['name'] + " ถูกเพิ่มแล้ว"),
+                ),
+              );
+              dataMark.add(datax[0]);
+            });
+            // set_location(datax[0]['lat'], datax[0]['lon']);
+            add_mark(datax[0]['lat'], datax[0]['lon']);
+          } else {
+            print("มีข้อมูลแล้ว");
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  backgroundColor: Colors.grey[200],
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  title: Text("แจ้งเตือน"),
+                  content: Text("มีข้อมูลนี้อยู่แล้ว",
+                      style: TextStyle(color: Colors.black, fontSize: 15)),
+                  actions: [
+                    TextButton(
+                      child: Text("ปิด",
+                          style: TextStyle(color: Colors.red, fontSize: 20)),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+          }
         }
       } else {
         setState(() {
@@ -178,26 +205,23 @@ class MapState extends State<Mymap> {
   }
 
   Future<void> searchData(value) async {
-    const apikey = "804903bb8f1b3b154a6f11b156adaf62";
-    final url = Uri.parse(
-        'https://search.longdo.com/mapsearch/json/search?keyword=${value}&limit=100&key=${apikey}');
-    final response = await http.get(url);
-    if (response.statusCode == 200) {
-      final jsonData = json.decode(response.body);
-      // print(jsonData['data']);
-      dataSearch = jsonData['data'];
-      if (value == "") {
-        dataSearch = [];
-      } else {
-        print(jsonData['data']);
+    try {
+      const apikey = "804903bb8f1b3b154a6f11b156adaf62";
+      final url = Uri.parse(
+          'https://search.longdo.com/mapsearch/json/search?keyword=${value}&limit=40&key=${apikey}');
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
         dataSearch = jsonData['data'];
+        setState(() {
+          dataSearch = dataSearch;
+        });
+        print(dataSearch);
+      } else {
+        throw Exception('Failed to load data');
       }
-      setState(() {
-        dataSearch = dataSearch;
-      });
-      print(dataSearch.length);
-    } else {
-      throw Exception('Failed to load data');
+    } catch (error) {
+      print(error);
     }
   }
 
@@ -228,6 +252,9 @@ class MapState extends State<Mymap> {
                       children: [
                         Expanded(
                           child: TextField(
+                            focusNode: FocusNode(
+                                canRequestFocus: true,
+                                descendantsAreFocusable: true),
                             controller: boxsearch,
                             onChanged: (value) {
                               searchData(value);
@@ -245,17 +272,6 @@ class MapState extends State<Mymap> {
                             ),
                           ),
                         ),
-                        SizedBox(width: 10),
-                        ElevatedButton(
-                          onPressed: () => searchData(boxsearch.text),
-                          child: Icon(Icons.search, color: Colors.white),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.pink.shade300,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                          ),
-                        )
                       ],
                     ),
                     SizedBox(height: 10),
@@ -269,12 +285,8 @@ class MapState extends State<Mymap> {
                               ListTile(
                                   leading: GestureDetector(
                                     onTap: () {
-                                      map.currentState?.call("location", args: [
-                                        {
-                                          "lon": dataSearch[index]['lon'],
-                                          "lat": dataSearch[index]['lat'],
-                                        }
-                                      ]);
+                                      set_location(dataSearch[index]['lat'],
+                                          dataSearch[index]['lon']);
                                       print(
                                           "lat: ${dataSearch[index]['lat']} lon: ${dataSearch[index]['lon']}");
                                     },
@@ -285,33 +297,67 @@ class MapState extends State<Mymap> {
                                   subtitle: Text(dataSearch[index]['address']),
                                   trailing: GestureDetector(
                                     onTap: () {
-                                      setState(() {
-                                        dataMark.add(dataSearch[index]);
-                                      });
-                                      map.currentState?.call("location", args: [
-                                        {
-                                          "lon": dataSearch[index]['lon'],
-                                          "lat": dataSearch[index]['lat'],
+                                      // setState(() {
+                                      //   dataMark.add(dataSearch[index]);
+                                      // });
+                                      if (dataMark.length > 0) {
+                                        var check = dataMark.where((element) =>
+                                            element['name'] ==
+                                            dataSearch[index]['name']);
+                                        print(check.length);
+                                        if (check.length == 0) {
+                                          setState(() {
+                                            dataMark.add(dataSearch[index]);
+                                          });
+                                          set_location(dataSearch[index]['lat'],
+                                              dataSearch[index]['lon']);
+                                          add_mark(dataSearch[index]['lat'],
+                                              dataSearch[index]['lon']);
+                                        } else {
+                                          print("มีข้อมูลแล้ว");
+                                          showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return AlertDialog(
+                                                backgroundColor:
+                                                    Colors.grey[200],
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(5),
+                                                ),
+                                                title: Text("แจ้งเตือน"),
+                                                content: Text(
+                                                    "มีข้อมูลนี้อยู่แล้ว",
+                                                    style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 15)),
+                                                actions: [
+                                                  TextButton(
+                                                    child: Text("ปิด",
+                                                        style: TextStyle(
+                                                            color: Colors.red,
+                                                            fontSize: 20)),
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
                                         }
-                                      ]);
-                                      mark = map.currentState?.LongdoObject(
-                                        "Marker",
-                                        args: [
-                                          {
-                                            "lon": dataSearch[index]['lon'],
-                                            "lat": dataSearch[index]['lat'],
-                                          },
-                                        ],
-                                      );
-                                      if (mark != null) {
-                                        map.currentState?.call("Overlays.add",
-                                            args: [mark!]);
+                                      } else {
+                                        setState(() {
+                                          dataMark.add(dataSearch[index]);
+                                        });
+                                        set_location(dataSearch[index]['lat'],
+                                            dataSearch[index]['lon']);
+                                        add_mark(dataSearch[index]['lat'],
+                                            dataSearch[index]['lon']);
                                       }
                                     },
-                                    child: Icon(
-                                        ischeckbtnAdd[index]
-                                            ? Icons.add_box
-                                            : Icons.add_box_outlined,
+                                    child: Icon(Icons.add_box,
                                         color: Colors.pink.shade300),
                                   )),
                               Divider(
@@ -334,13 +380,48 @@ class MapState extends State<Mymap> {
     );
   }
 
+  void add_mark(lat, lon) {
+    mark = map.currentState?.LongdoObject(
+      "Marker",
+      args: [
+        {
+          "lon": lon,
+          "lat": lat,
+        },
+      ],
+    );
+    if (mark != null) {
+      map.currentState?.call("Overlays.add", args: [mark!]);
+    }
+  }
+
+  void set_location(lat, lon) {
+    map.currentState?.call("location", args: [
+      {
+        "lon": lon,
+        "lat": lat,
+      }
+    ]);
+  }
+
+  void remove_mark(index) async {
+    print("remove ${index}");
+    var x = await map.currentState?.call("Overlays.list");
+    var xd = jsonDecode(x.toString());
+    print(xd[index]);
+    map.currentState?.call("Overlays.remove", args: [xd[index]]);
+    setState(() {
+      dataMark.removeAt(index);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    Object? marker;
+    // Object? marker;
     return MaterialApp(
       scaffoldMessengerKey: messenger,
       home: Scaffold(
-          floatingActionButton: FloatingActionButton(
+          floatingActionButton: FloatingActionButton.small(
             onPressed: () => _displayDraggableScrollableSheet(context),
             backgroundColor: Colors.pink.shade300,
             child: Icon(Icons.search),
@@ -446,65 +527,63 @@ class MapState extends State<Mymap> {
                   ),
                   SizedBox(height: 10),
                   Expanded(
-                      child: Padding(
-                    padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-                    child: ListView.builder(
-                      padding: EdgeInsets.zero,
-                      itemCount: dataMark.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return Column(
-                          children: [
-                            Container(
-                              padding: EdgeInsets.zero,
-                              decoration: BoxDecoration(
-                                color: Colors.pink[50],
-                                borderRadius: BorderRadius.circular(4),
-                                border: Border.all(
-                                  color: Colors.purple,
-                                  width: 2,
-                                ),
-                              ),
-                              child: ListTile(
-                                leading: GestureDetector(
-                                  onTap: () {
-                                    // print(ischeckbtnAdd);
-                                    // setState(() {
-                                    //   ischeckbtnAdd[index] =
-                                    //       !ischeckbtnAdd[index];
-                                    // });
-                                  },
-                                  child: Container(
-                                    // alignment: Alignment.centerLeft,
-                                    width: 50,
-                                    height: 50,
-                                    child: Icon(
-                                      Icons.location_on,
-                                      color: Colors.purple,
-                                      size: 30,
-                                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                      child: ListView.builder(
+                        padding: EdgeInsets.only(bottom: 50),
+                        itemCount: dataMark.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Column(
+                            children: [
+                              Container(
+                                padding: EdgeInsets.zero,
+                                decoration: BoxDecoration(
+                                  color: Colors.pink[50],
+                                  borderRadius: BorderRadius.circular(4),
+                                  border: Border.all(
+                                    color: Colors.purple,
+                                    width: 2,
                                   ),
                                 ),
-                                title: Text("${dataMark[index]['name']}"),
-                                trailing: GestureDetector(
-                                  onTap: () {
-                                    print(
-                                        "lat: ${index + 1} lon: ${index + 1}");
-                                  },
-                                  child: Icon(Icons.delete,
-                                      color: Colors.pink.shade300),
+                                child: ListTile(
+                                  leading: GestureDetector(
+                                    onTap: () {
+                                      set_location(dataMark[index]['lat'],
+                                          dataMark[index]['lon']);
+                                    },
+                                    child: Container(
+                                      // alignment: Alignment.centerLeft,
+                                      width: 50,
+                                      height: 50,
+                                      child: Icon(
+                                        Icons.location_on,
+                                        color: Colors.purple,
+                                        size: 30,
+                                      ),
+                                    ),
+                                  ),
+                                  title: Text("${dataMark[index]['name']}"),
+                                  trailing: GestureDetector(
+                                    onTap: () {
+                                      print("id: ${dataMark[index]['id']}");
+                                      remove_mark(index);
+                                    },
+                                    child: Icon(Icons.delete,
+                                        color: Colors.pink.shade300),
+                                  ),
                                 ),
                               ),
-                            ),
-                            Divider(
-                              height: 1,
-                              color: Colors.grey,
-                            ),
-                            SizedBox(height: 10),
-                          ],
-                        );
-                      },
+                              Divider(
+                                height: 1,
+                                color: Colors.grey,
+                              ),
+                              SizedBox(height: 10),
+                            ],
+                          );
+                        },
+                      ),
                     ),
-                  )),
+                  ),
                   // FloatingActionButton(
                   //   onPressed: () => print("zs"),
                   //   child: Icon(Icons.add),
