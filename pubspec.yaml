@@ -38,6 +38,10 @@ dependencies:
   geolocator: ^10.0.1
   longdo_maps_api3_flutter: ^1.9.0
   modal_bottom_sheet: ^2.1.2
+  firebase_core: ^2.16.0
+  cloud_firestore: ^4.9.2
+  firebase_auth: ^4.10.0
+  google_sign_in: ^6.1.5
 
 dev_dependencies:
   flutter_test:
@@ -55,16 +59,15 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+    - assets/images/logo.jpg
+    # - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

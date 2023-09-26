@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "596355080817",
+    "project_id": "primoxdm",
+    "storage_bucket": "primoxdm.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:596355080817:android:b4bdf993936654cd5971d0",
+        "android_client_info": {
+          "package_name": "com.example.getgeo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6AEvK8DhuWBKMQvTxEyrz0jRhJnbmw4U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
