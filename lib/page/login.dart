@@ -8,6 +8,7 @@ import 'package:getgeo/page/map_search.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:getgeo/firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
 class Firexd extends StatefulWidget {
   const Firexd({super.key, required String title});
@@ -18,6 +19,9 @@ class Firexd extends StatefulWidget {
 
 class _FirexdState extends State<Firexd> {
   List<dynamic> datalist = [];
+  var currentScreen = Mymap(title: "");
+  int _page = 0;
+  GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
   @override
   void initState() {
     super.initState();
