@@ -322,7 +322,7 @@ class _HomexdState extends State<Homexd> {
                       );
                     },
                     duration: 1000,
-                    autoplay: false,
+                    autoplay: true,
                     itemCount: 4,
                     viewportFraction: 0.35,
                     scale: 0.6,

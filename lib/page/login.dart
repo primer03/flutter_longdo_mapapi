@@ -132,119 +132,111 @@ class _FirexdState extends State<Firexd> {
   @override
   Widget build(BuildContext context) {
     print(datalist);
-    return MaterialApp(
-      home: SafeArea(
-        child: Scaffold(
-          body: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  height: 50,
-                  width: double.infinity,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: TextFieldAdd,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'Add Anime',
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          var db = FirebaseFirestore.instance;
-                          db.collection("Anime").add({
-                            "anime_id": random.nextInt(9000) + 1000,
-                            "anime_name": TextFieldAdd.text,
-                          });
-                          get_anime();
-                          setState(() {
-                            TextFieldAdd.text = "";
-                          });
-                        },
-                        child: Container(
-                          height: 50,
-                          width: 50,
-                          child: Icon(Icons.add_box_outlined),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                            primary: Colors.deepPurple),
-                      )
-                    ],
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+            height: 50,
+            width: double.infinity,
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: TextFieldAdd,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Add Anime',
+                    ),
                   ),
                 ),
-              ),
-              Expanded(
-                  child: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: ListView(
-                  children: [
-                    for (var i = 0; i < datalist.length; i++)
-                      Column(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.deepPurple),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            // borderRadius: BorderRadius.circular(10)),
-                            child: ListTile(
-                              title: Text(
-                                  "${i + 1}. ${datalist[i]["anime_name"]}"),
-                              subtitle: Text("ID : ${datalist[i]["anime_id"]}"),
-                              trailing: GestureDetector(
-                                  onTap: () {},
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      GestureDetector(
-                                        onTap: () {
-                                          edit_anime_dialog(datalist[i]["id"],
-                                              datalist[i]["anime_name"]);
-                                          print(datalist[i]["id"]);
-                                        },
-                                        child: Icon(
-                                          Icons.edit,
-                                          color: Colors.green,
-                                        ),
-                                      ),
-                                      SizedBox(width: 10),
-                                      GestureDetector(
-                                        onTap: () {
-                                          var db = FirebaseFirestore.instance;
-                                          db
-                                              .collection("Anime")
-                                              .doc(datalist[i]["id"])
-                                              .delete();
-                                          get_anime();
-                                        },
-                                        child: Icon(
-                                          Icons.delete,
-                                          color: Colors.red,
-                                        ),
-                                      ),
-                                    ],
-                                  )),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          )
-                        ],
-                      )
-                  ],
+                SizedBox(
+                  width: 10,
                 ),
-              ))
-            ],
+                ElevatedButton(
+                  onPressed: () {
+                    var db = FirebaseFirestore.instance;
+                    db.collection("Anime").add({
+                      "anime_id": random.nextInt(9000) + 1000,
+                      "anime_name": TextFieldAdd.text,
+                    });
+                    get_anime();
+                    setState(() {
+                      TextFieldAdd.text = "";
+                    });
+                  },
+                  child: Container(
+                    height: 50,
+                    width: 50,
+                    child: Icon(Icons.add_box_outlined),
+                  ),
+                  style: ElevatedButton.styleFrom(primary: Colors.deepPurple),
+                )
+              ],
+            ),
           ),
         ),
-      ),
+        Expanded(
+            child: Padding(
+          padding: EdgeInsets.all(8.0),
+          child: ListView(
+            children: [
+              for (var i = 0; i < datalist.length; i++)
+                Column(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.deepPurple),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      // borderRadius: BorderRadius.circular(10)),
+                      child: ListTile(
+                        title: Text("${i + 1}. ${datalist[i]["anime_name"]}"),
+                        subtitle: Text("ID : ${datalist[i]["anime_id"]}"),
+                        trailing: GestureDetector(
+                            onTap: () {},
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    edit_anime_dialog(datalist[i]["id"],
+                                        datalist[i]["anime_name"]);
+                                    print(datalist[i]["id"]);
+                                  },
+                                  child: Icon(
+                                    Icons.edit,
+                                    color: Colors.green,
+                                  ),
+                                ),
+                                SizedBox(width: 10),
+                                GestureDetector(
+                                  onTap: () {
+                                    var db = FirebaseFirestore.instance;
+                                    db
+                                        .collection("Anime")
+                                        .doc(datalist[i]["id"])
+                                        .delete();
+                                    get_anime();
+                                  },
+                                  child: Icon(
+                                    Icons.delete,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ],
+                            )),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    )
+                  ],
+                )
+            ],
+          ),
+        ))
+      ],
     );
   }
 }
