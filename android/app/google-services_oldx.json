@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "596355080817",
+    "project_id": "primoxdm",
+    "storage_bucket": "primoxdm.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:596355080817:android:b4bdf993936654cd5971d0",
+        "android_client_info": {
+          "package_name": "com.example.getgeo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "596355080817-rktgpdgndktap5vsibmjmt403sel7fdk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.getgeo",
+            "certificate_hash": "38b0369657a9280de9f74fa7b0fb7e5e13c41a92"
+          }
+        },
+        {
+          "client_id": "596355080817-f9v0i10qi2od4td7v2k9h2kkmqvv5iao.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6AEvK8DhuWBKMQvTxEyrz0jRhJnbmw4U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "596355080817-f9v0i10qi2od4td7v2k9h2kkmqvv5iao.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "596355080817-7a04n0ajtkd7eum0mu2ajbbp0tl2mn6i.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.getgeo.RunnerTests"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:getgeo/model/CarService.dart';
 import 'package:getgeo/model/oilService.dart';
@@ -10,7 +11,8 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:provider/provider.dart';
 
 class selectCar extends StatefulWidget {
-  const selectCar({super.key});
+  const selectCar({Key? key, required this.login_type}) : super(key: key);
+  final String login_type;
 
   @override
   State<selectCar> createState() => _selectCarState();
@@ -21,13 +23,17 @@ class _selectCarState extends State<selectCar> {
   int? selectedValue = 1;
   String selectoil = '';
   bool isDropdownEnabled = true;
-  List<dynamic> Oilname = [];
+  List<String> Oilname = [];
 
   Future getOil() async {
     var oil = await OilService().getSuggestions();
     print(oil);
+    oil.forEach((element) {
+      Oilname.add(element['Product']);
+    });
+    print(Oilname);
     setState(() {
-      Oilname = oil;
+      Oilname = Oilname;
     });
   }
 
@@ -35,24 +41,24 @@ class _selectCarState extends State<selectCar> {
   void initState() {
     super.initState();
     getOil();
-    var username = Provider.of<UserModel>(context, listen: false).get_user();
-    print("username: ${username['username']}");
-    var db = FirebaseFirestore.instance;
-    db
-        .collection("user_setting")
-        .where("user_name", isEqualTo: username['username'])
-        .get()
-        .then((value) {
-      if (value.docs.length > 0) {
-        print(value.docs[0].data());
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => fabtab(),
-          ),
-        );
-      }
-    });
+    // var username = Provider.of<UserModel>(context, listen: false).get_user();
+    // print("username: ${username['username']}");
+    // var db = FirebaseFirestore.instance;
+    // db
+    //     .collection("user_setting")
+    //     .where("user_name", isEqualTo: username['username'])
+    //     .get()
+    //     .then((value) {
+    //   if (value.docs.length > 0) {
+    //     print(value.docs[0].data());
+    //     Navigator.pushReplacement(
+    //       context,
+    //       MaterialPageRoute(
+    //         builder: (context) => fabtab(),
+    //       ),
+    //     );
+    //   }
+    // });
   }
 
   @override
@@ -267,17 +273,11 @@ class _selectCarState extends State<selectCar> {
                                     });
                                   }
                                 : null,
-                            items: Oilname.map((e) {
-                              return DropdownMenuItem(
-                                value: e,
-                                child: Text(
-                                  e,
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    color: Color(
-                                        0xFF141E46), // Set text color to #141E46
-                                  ),
-                                ),
+                            items: Oilname.map<DropdownMenuItem<String>>(
+                                (String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
                               );
                             }).toList(),
                           ),
@@ -299,16 +299,58 @@ class _selectCarState extends State<selectCar> {
                                 var db = FirebaseFirestore.instance;
                                 var user = Userdata.get_user();
                                 print(user['username']);
+                                print(user['email']);
                                 var cartype =
                                     selectedValue == 1 ? 'น้ำมัน' : 'ไฟฟ้า';
                                 var caroil =
                                     selectedValue == 2 ? '' : selectoil;
-                                db.collection("user_setting").add({
-                                  "user_name": user['username'],
-                                  "car_brand": _typeAheadController.text,
-                                  "car_type": cartype,
-                                  "car_oil": caroil,
-                                });
+                                if (widget.login_type == 'google') {
+                                  db.collection("user_setting").add({
+                                    "user_name": user['username'],
+                                    'user_email': user['email'],
+                                    'user_img': user['imgPhoto'],
+                                    "car_brand": _typeAheadController.text,
+                                    "car_type": cartype,
+                                    "car_oil": caroil,
+                                    "login_type": widget.login_type,
+                                  });
+                                } else {
+                                  //update data
+                                  var Userdata = await db
+                                      .collection('user_setting')
+                                      .where('user_email',
+                                          isEqualTo: user['email'])
+                                      .get();
+                                  if (Userdata.docs.length > 0) {
+                                    print(Userdata.docs[0].id);
+                                    db
+                                        .collection("user_setting")
+                                        .doc(Userdata.docs[0].id)
+                                        .update({
+                                      "user_name": user['username'],
+                                      'user_email': user['email'],
+                                      'user_img': user['imgPhoto'],
+                                      "car_brand": _typeAheadController.text,
+                                      "car_type": cartype,
+                                      "car_oil": caroil,
+                                      "login_type": widget.login_type,
+                                    });
+                                    await FirebaseAuth.instance
+                                        .createUserWithEmailAndPassword(
+                                            email: user['email'],
+                                            password: user['password']);
+                                  } else {
+                                    db.collection("user_setting").add({
+                                      "user_name": user['username'],
+                                      'user_email': user['email'],
+                                      'user_img': user['imgPhoto'],
+                                      "car_brand": _typeAheadController.text,
+                                      "car_type": cartype,
+                                      "car_oil": caroil,
+                                      "login_type": widget.login_type,
+                                    });
+                                  }
+                                }
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(

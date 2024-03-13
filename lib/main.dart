@@ -2,18 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:getgeo/model/mapModel.dart';
 import 'package:getgeo/model/userModel.dart';
-import 'package:getgeo/page/Fabtab.dart';
-import 'package:getgeo/page/authgui.dart';
-import 'package:getgeo/page/home.dart';
 // import 'package:getgeo/page/home.dart';
-import 'package:getgeo/page/map.dart';
-import 'package:getgeo/page/map_search.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:getgeo/page/splash.dart';
-import 'firebase_options.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'page/login.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,7 +24,7 @@ void main() async {
   } else {
     print('Firebase initialized');
   }
-  runApp(const MyApp());
+  initializeDateFormatting('th', null).then((_) => runApp(MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -44,9 +38,11 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<mapModel>(create: (_) => mapModel())
       ],
       child: MaterialApp(
-        title: 'GetGeo',
-        home: const splash(),
-      ),
+          title: 'GetGeo',
+          home: const splash(),
+          theme: ThemeData(
+            primarySwatch: Colors.red,
+          )),
     );
   }
 }

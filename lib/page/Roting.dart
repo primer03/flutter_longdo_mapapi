@@ -184,7 +184,17 @@ class _routingState extends State<routing> {
                         }
                       ]);
                     });
+                    map.currentState?.run(
+                        'map.Route.enableRoute(longdo.RouteType.AllDrive, false);');
+
+                    // if (AllDrive != null) {
+                    //   map.currentState
+                    //       ?.call("Route.enableRoute", args: [AllDrive, false]);
+                    // }
                     map.currentState?.call("Route.search");
+                    map.currentState?.run('''
+map.Route.auto(true);
+''');
                     // load_maplist();
                   },
                 ),

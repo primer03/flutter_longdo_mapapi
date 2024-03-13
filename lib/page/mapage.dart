@@ -203,7 +203,7 @@ class _MapxdState extends State<Mapxd> {
                         },
                         child: Icon(Icons.search, color: Colors.white),
                         style: ElevatedButton.styleFrom(
-                          primary: Colors.pink.shade300,
+                          backgroundColor: Colors.pink.shade300,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(5),
                           ),

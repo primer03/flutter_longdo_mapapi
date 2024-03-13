@@ -14,11 +14,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "596355080817-rktgpdgndktap5vsibmjmt403sel7fdk.apps.googleusercontent.com",
+          "client_id": "596355080817-487dn9266l04kdqb3s6spdb4f4e516ch.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.getgeo",
-            "certificate_hash": "38b0369657a9280de9f74fa7b0fb7e5e13c41a92"
+            "certificate_hash": "e555fb9553113d9f54093c18e324d98b8ce9044f"
           }
         },
         {

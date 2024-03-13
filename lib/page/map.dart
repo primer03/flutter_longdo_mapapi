@@ -189,7 +189,7 @@ class MapState extends State<Mymap> {
                         },
                         child: Icon(Icons.search, color: Colors.white),
                         style: ElevatedButton.styleFrom(
-                          primary: Colors.pink.shade300,
+                          backgroundColor: Colors.pink.shade300,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(5),
                           ),

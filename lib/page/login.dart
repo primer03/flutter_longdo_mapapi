@@ -170,7 +170,8 @@ class _FirexdState extends State<Firexd> {
                     width: 50,
                     child: Icon(Icons.add_box_outlined),
                   ),
-                  style: ElevatedButton.styleFrom(primary: Colors.deepPurple),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.deepPurple),
                 )
               ],
             ),
