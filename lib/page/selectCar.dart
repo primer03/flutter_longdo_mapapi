@@ -20,10 +20,13 @@ class selectCar extends StatefulWidget {
 
 class _selectCarState extends State<selectCar> {
   final TextEditingController _typeAheadController = TextEditingController();
+  final TextEditingController _typeAheadController2 = TextEditingController();
   int? selectedValue = 1;
   String selectoil = '';
   bool isDropdownEnabled = true;
   List<String> Oilname = [];
+  List<Map<String, dynamic>> carData = [];
+  var db = FirebaseFirestore.instance;
 
   Future getOil() async {
     var oil = await OilService().getSuggestions();
@@ -37,10 +40,35 @@ class _selectCarState extends State<selectCar> {
     });
   }
 
+  Future<void> getEvData() async {
+    var EvData = await db.collection('ev').get();
+    // print(EvData.docs[0].data());
+    EvData.docs.forEach((element) {
+      carData.add(element.data());
+    });
+    setState(() {
+      carData = carData;
+      print(carData);
+    });
+  }
+
+  Future<List<String>> getCarData(String name) async {
+    List<String> carSearch = [];
+    if (name == '') return carSearch;
+    carData.forEach((element) {
+      String strname = element['name'].toString().toUpperCase();
+      if (strname.contains(name.toUpperCase())) {
+        carSearch.add(element['name']);
+      }
+    });
+    return carSearch;
+  }
+
   @override
   void initState() {
     super.initState();
     getOil();
+    getEvData();
     // var username = Provider.of<UserModel>(context, listen: false).get_user();
     // print("username: ${username['username']}");
     // var db = FirebaseFirestore.instance;
@@ -112,85 +140,6 @@ class _selectCarState extends State<selectCar> {
                           SizedBox(
                             height: 20,
                           ),
-                          TypeAheadField(
-                            noItemsFoundBuilder: (context) => Container(
-                              height: 20,
-                              child: Center(
-                                child: Text(
-                                  'No Data Found',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'Impact',
-                                    color: Color(
-                                        0xFF141E46), // Set text color to #141E46
-                                  ),
-                                ),
-                              ),
-                            ),
-                            textFieldConfiguration: TextFieldConfiguration(
-                              controller: _typeAheadController,
-                              autofocus: false,
-                              decoration: const InputDecoration(
-                                hintText: 'เลือกแบรนด์รถของคุณ',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(10.0),
-                                  ),
-                                ),
-                                suffixIcon:
-                                    Icon(Icons.search, color: Colors.black),
-                                contentPadding: EdgeInsets.all(5.0),
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Colors.grey,
-                                    width: 2,
-                                  ),
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(10.0),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            suggestionsCallback: (pattern) {
-                              print(pattern);
-                              return CarService.getSuggestions(pattern);
-                            },
-                            itemBuilder: (context, String suggestion) {
-                              return Row(
-                                children: [
-                                  Flexible(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Text(
-                                        suggestion,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          color: Color(
-                                              0xFF141E46), // Set text color to #141E46
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              );
-                            },
-                            itemSeparatorBuilder: (context, index) =>
-                                const Divider(height: 1),
-                            onSuggestionSelected: (String suggestion) {
-                              this._typeAheadController.text = suggestion;
-                            },
-                            suggestionsBoxDecoration: SuggestionsBoxDecoration(
-                              borderRadius: BorderRadius.circular(5.0),
-                              elevation: 8.0,
-                              color: Theme.of(context).cardColor,
-                            ),
-                          ),
-                          SizedBox(
-                            height: 20,
-                          ),
                           Row(
                             children: [
                               Radio(
@@ -200,6 +149,7 @@ class _selectCarState extends State<selectCar> {
                                   setState(() {
                                     selectedValue = value;
                                     isDropdownEnabled = true;
+                                    _typeAheadController.clear();
                                   });
                                 },
                               ),
@@ -220,6 +170,7 @@ class _selectCarState extends State<selectCar> {
                                   setState(() {
                                     selectedValue = value;
                                     isDropdownEnabled = false;
+                                    _typeAheadController.clear();
                                   });
                                 },
                               ),
@@ -238,49 +189,211 @@ class _selectCarState extends State<selectCar> {
                           SizedBox(
                             height: 20,
                           ),
-                          DropdownButtonFormField(
-                            value: selectoil == '' ? null : selectoil,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(10.0),
+                          selectedValue == 2
+                              ? TypeAheadField(
+                                  noItemsFoundBuilder: (context) => Container(
+                                    height: 20,
+                                    child: Center(
+                                      child: Text(
+                                        'ไม่พบข้อมูลรถของคุณ',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'Impact',
+                                          color: Color(
+                                              0xFF141E46), // Set text color to #141E46
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  textFieldConfiguration:
+                                      TextFieldConfiguration(
+                                    controller: _typeAheadController,
+                                    autofocus: false,
+                                    decoration: const InputDecoration(
+                                      hintText: 'เลือกแบรนด์รถของคุณ',
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(10.0),
+                                        ),
+                                      ),
+                                      suffixIcon: Icon(Icons.search,
+                                          color: Colors.black),
+                                      contentPadding: EdgeInsets.all(5.0),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: Colors.grey,
+                                          width: 2,
+                                        ),
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(10.0),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  suggestionsCallback: (pattern) {
+                                    print(pattern);
+                                    return getCarData(pattern);
+                                  },
+                                  itemBuilder: (context, String suggestion) {
+                                    return Row(
+                                      children: [
+                                        Flexible(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(10.0),
+                                            child: Text(
+                                              suggestion,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                color: Color(
+                                                    0xFF141E46), // Set text color to #141E46
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    );
+                                  },
+                                  itemSeparatorBuilder: (context, index) =>
+                                      const Divider(height: 1),
+                                  onSuggestionSelected: (String suggestion) {
+                                    this._typeAheadController.text = suggestion;
+                                  },
+                                  suggestionsBoxDecoration:
+                                      SuggestionsBoxDecoration(
+                                    borderRadius: BorderRadius.circular(5.0),
+                                    elevation: 8.0,
+                                    color: Theme.of(context).cardColor,
+                                  ),
+                                )
+                              : TypeAheadField(
+                                  noItemsFoundBuilder: (context) => Container(
+                                    height: 20,
+                                    child: Center(
+                                      child: Text(
+                                        'No Data Found',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'Impact',
+                                          color: Color(
+                                              0xFF141E46), // Set text color to #141E46
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  textFieldConfiguration:
+                                      TextFieldConfiguration(
+                                    controller: _typeAheadController,
+                                    autofocus: false,
+                                    decoration: const InputDecoration(
+                                      hintText: 'เลือกแบรนด์รถของคุณ',
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(10.0),
+                                        ),
+                                      ),
+                                      suffixIcon: Icon(Icons.search,
+                                          color: Colors.black),
+                                      contentPadding: EdgeInsets.all(5.0),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: Colors.grey,
+                                          width: 2,
+                                        ),
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(10.0),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  suggestionsCallback: (pattern) {
+                                    print(pattern);
+                                    return CarService.getSuggestions(pattern);
+                                  },
+                                  itemBuilder: (context, String suggestion) {
+                                    return Row(
+                                      children: [
+                                        Flexible(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(10.0),
+                                            child: Text(
+                                              suggestion,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                color: Color(
+                                                    0xFF141E46), // Set text color to #141E46
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    );
+                                  },
+                                  itemSeparatorBuilder: (context, index) =>
+                                      const Divider(height: 1),
+                                  onSuggestionSelected: (String suggestion) {
+                                    this._typeAheadController.text = suggestion;
+                                  },
+                                  suggestionsBoxDecoration:
+                                      SuggestionsBoxDecoration(
+                                    borderRadius: BorderRadius.circular(5.0),
+                                    elevation: 8.0,
+                                    color: Theme.of(context).cardColor,
+                                  ),
                                 ),
-                              ),
-                              contentPadding: EdgeInsets.all(5.0),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Colors.grey,
-                                  width: 2,
-                                ),
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(10.0),
-                                ),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Colors.grey,
-                                  width: 2,
-                                ),
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(10.0),
-                                ),
-                              ),
-                            ),
-                            onChanged: isDropdownEnabled
-                                ? (value) {
-                                    setState(() {
-                                      selectoil = value.toString();
-                                    });
-                                  }
-                                : null,
-                            items: Oilname.map<DropdownMenuItem<String>>(
-                                (String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              );
-                            }).toList(),
+                          SizedBox(
+                            height: 20,
                           ),
+                          selectedValue == 1
+                              ? DropdownButtonFormField(
+                                  value: selectoil == '' ? null : selectoil,
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(10.0),
+                                      ),
+                                    ),
+                                    contentPadding: EdgeInsets.all(5.0),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: Colors.grey,
+                                        width: 2,
+                                      ),
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(10.0),
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: Colors.grey,
+                                        width: 2,
+                                      ),
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(10.0),
+                                      ),
+                                    ),
+                                  ),
+                                  onChanged: isDropdownEnabled
+                                      ? (value) {
+                                          setState(() {
+                                            selectoil = value.toString();
+                                          });
+                                        }
+                                      : null,
+                                  items: Oilname.map<DropdownMenuItem<String>>(
+                                      (String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(value),
+                                    );
+                                  }).toList(),
+                                )
+                              : Container(),
                           SizedBox(
                             height: 10,
                           ),
@@ -340,6 +453,10 @@ class _selectCarState extends State<selectCar> {
                                             email: user['email'],
                                             password: user['password']);
                                   } else {
+                                    await FirebaseAuth.instance
+                                        .createUserWithEmailAndPassword(
+                                            email: user['email'],
+                                            password: user['password']);
                                     db.collection("user_setting").add({
                                       "user_name": user['username'],
                                       'user_email': user['email'],

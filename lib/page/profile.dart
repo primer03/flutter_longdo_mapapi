@@ -246,32 +246,6 @@ class _ProfilepageState extends State<Profilepage> {
                           ),
                         )
                       : Container(),
-                  InkWell(
-                    splashColor: Color(0xFFFC70039),
-                    splashFactory: InkSplash.splashFactory,
-                    onTap: () {
-                      // Define what happens when you tap on the 'Language'
-                      print('Language Tapped');
-                    },
-                    child: ListTile(
-                      title: Text('Language'),
-                      leading: Icon(Icons.language),
-                      trailing: Icon(Icons.arrow_forward_ios),
-                    ),
-                  ),
-                  InkWell(
-                    splashColor: Color(0xFFFC70039),
-                    splashFactory: InkSplash.splashFactory,
-                    onTap: () {
-                      // Define what happens when you tap on the 'Theme'
-                      print('Theme Tapped');
-                    },
-                    child: ListTile(
-                      title: Text('Theme'),
-                      leading: Icon(Icons.color_lens),
-                      trailing: Icon(Icons.arrow_forward_ios),
-                    ),
-                  ),
                 ],
               ),
             ),

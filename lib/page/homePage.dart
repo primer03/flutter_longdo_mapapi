@@ -5,6 +5,7 @@ import 'package:getgeo/page/Oilpage.dart';
 import 'package:getgeo/page/addtrip.dart';
 import 'package:getgeo/page/map.dart';
 import 'package:card_swiper/card_swiper.dart';
+import 'package:getgeo/page/my_travel_list.dart';
 import 'package:getgeo/skeleton/SkeletionLoad.dart';
 import 'package:provider/provider.dart';
 import 'package:skeleton_text/skeleton_text.dart';
@@ -428,6 +429,16 @@ class _HomepageBUState extends State<HomepageBU> {
                                                     MaterialPageRoute(
                                                       builder: (context) =>
                                                           TripPage(),
+                                                    ),
+                                                  ),
+                                                }
+                                              else if (i == 2)
+                                                {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          MyTravelList(),
                                                     ),
                                                   ),
                                                 }

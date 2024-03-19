@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:getgeo/model/TripModel.dart';
 import 'package:getgeo/model/mapModel.dart';
 import 'package:getgeo/model/userModel.dart';
 // import 'package:getgeo/page/home.dart';
@@ -35,7 +36,8 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         Provider<UserModel>(create: (_) => UserModel()),
-        ChangeNotifierProvider<mapModel>(create: (_) => mapModel())
+        ChangeNotifierProvider<mapModel>(create: (_) => mapModel()),
+        ChangeNotifierProvider<TripModel>(create: (_) => TripModel()),
       ],
       child: MaterialApp(
           title: 'GetGeo',
