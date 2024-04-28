@@ -52,14 +52,8 @@ class _fabtabState extends State<fabtab> {
     Widget _showPage = currentidx == 0
         ? HomepageBU()
         : currentidx == 1
-            ? Mapmode(
-                set_currentidx: set_currentidx,
-              )
-            : currentidx == 2
-                ? Profilepage()
-                : currentidx == 3
-                    ? routing()
-                    : false as Widget;
+            ? Profilepage()
+            : false as Widget;
     return Consumer<UserModel>(
       builder: (context, usermode, child) => Scaffold(
         body: _showPage,
@@ -73,9 +67,9 @@ class _fabtabState extends State<fabtab> {
               size: 30,
               color: Color(0xFFFFF5E0),
             ),
-            Icon(Icons.location_on, size: 30, color: Color(0xFFFFF5E0)),
+            // Icon(Icons.location_on, size: 30, color: Color(0xFFFFF5E0)),
             Icon(Icons.person_3_sharp, size: 30, color: Color(0xFFFFF5E0)),
-            Icon(Icons.call_split, size: 30, color: Color(0xFFFFF5E0)),
+            // Icon(Icons.call_split, size: 30, color: Color(0xFFFFF5E0)),
             Icon(Icons.logout, size: 30, color: Color(0xFFFFF5E0)),
           ],
           color: Color(0xFFFC70039)!,
@@ -88,7 +82,7 @@ class _fabtabState extends State<fabtab> {
               _page = index;
               currentidx = index;
             });
-            if (_page == 4) {
+            if (_page == 2) {
               setState(() {
                 _page = 0;
                 currentidx = 0;

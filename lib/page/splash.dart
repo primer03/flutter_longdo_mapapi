@@ -181,7 +181,7 @@ class _splashState extends State<splash> {
                 opacity: _opacity,
                 duration: Duration(seconds: 1), // Duration of the animation
                 child: Image.asset(
-                  'assets/images/luffy.png',
+                  'assets/images/loginlogo.png',
                   width: 200,
                   height: 200,
                 ),

@@ -4,6 +4,7 @@ import 'package:getgeo/model/userModel.dart';
 import 'package:getgeo/page/change_password.dart';
 import 'package:getgeo/page/edit_profile.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Profilepage extends StatefulWidget {
   const Profilepage({super.key});
@@ -18,11 +19,47 @@ class _ProfilepageState extends State<Profilepage> {
   String name = '';
   String email = '';
   String login_type = '';
+  bool notification = false;
+  bool notificationsound = false;
+  int count_trip = 0;
+  int count_bookmark = 0;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getdata();
+    getsetttingnoti();
+    getstatistics();
+  }
+
+  Future<void> getstatistics() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    UserModel userModel = Provider.of<UserModel>(context, listen: false);
+    var trip_count = await db
+        .collection('trip')
+        .where('user_email', isEqualTo: userModel.email)
+        .get();
+    print('trip_count = ${trip_count.docs.length}');
+    var bookmaker_count = await db
+        .collection('trip')
+        .where('bookmark', arrayContains: userModel.email)
+        .get();
+    print('bookmaker_count = ${bookmaker_count.docs.length}');
+
+    setState(() {
+      count_trip = trip_count.docs.length;
+      count_bookmark = bookmaker_count.docs.length;
+    });
+  }
+
+  Future<void> getsetttingnoti() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    notification = prefs.getBool('notification') ?? false;
+    notificationsound = prefs.getBool('notificationsound') ?? false;
+    setState(() {
+      notification = notification;
+      notificationsound = notificationsound;
+    });
   }
 
   getdata() async {
@@ -167,14 +204,14 @@ class _ProfilepageState extends State<Profilepage> {
                 Column(
                   children: [
                     Text(
-                      '100',
+                      count_trip.toString(),
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
-                      'Follower',
+                      'ทริปของฉัน',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -190,14 +227,14 @@ class _ProfilepageState extends State<Profilepage> {
                 Column(
                   children: [
                     Text(
-                      '100',
+                      count_bookmark.toString(),
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
-                      'Following',
+                      'ทริปที่บันทึกไว้',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -246,6 +283,60 @@ class _ProfilepageState extends State<Profilepage> {
                           ),
                         )
                       : Container(),
+                  InkWell(
+                    splashColor: Color(0xFFFC70039),
+                    splashFactory: InkSplash.splashFactory,
+                    onTap: () {
+                      // Define what happens when you tap on the 'Change Password'
+                      print('Change Password Tapped');
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return ChangePasswordPage();
+                      }));
+                    },
+                    child: ListTile(
+                      title: Text('ตั้งค่าการแจ้งเตือน'),
+                      leading: Icon(Icons.notifications),
+                      trailing: Switch(
+                        value: notification,
+                        onChanged: (value) async {
+                          final SharedPreferences prefs =
+                              await SharedPreferences.getInstance();
+                          prefs.setBool('notification', value);
+                          setState(() {
+                            notification = value;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                  InkWell(
+                    splashColor: Color(0xFFFC70039),
+                    splashFactory: InkSplash.splashFactory,
+                    onTap: () {
+                      // Define what happens when you tap on the 'Change Password'
+                      print('Change Password Tapped');
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return ChangePasswordPage();
+                      }));
+                    },
+                    child: ListTile(
+                      title: Text('ตั้งค่าเสียงการแจ้งเตือน'),
+                      leading: Icon(Icons.notifications),
+                      trailing: Switch(
+                        value: notificationsound,
+                        onChanged: (value) async {
+                          final SharedPreferences prefs =
+                              await SharedPreferences.getInstance();
+                          prefs.setBool('notificationsound', value);
+                          setState(() {
+                            notificationsound = value;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

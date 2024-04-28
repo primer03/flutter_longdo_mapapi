@@ -1,6 +1,10 @@
 import 'dart:convert';
 import 'dart:async';
 import 'dart:math';
+// import 'dart:developer';
+// import 'dart:ffi';
+// import 'dart:math';
+// import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -13,10 +17,9 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-class MapSelect extends StatefulWidget {
-  const MapSelect({
+class MapSelectEdit extends StatefulWidget {
+  const MapSelectEdit({
     super.key,
     required this.idx,
     required this.callback,
@@ -25,10 +28,10 @@ class MapSelect extends StatefulWidget {
   final VoidCallback callback;
 
   @override
-  State<MapSelect> createState() => _MapSelectState();
+  State<MapSelectEdit> createState() => _MapSelectEditState();
 }
 
-class _MapSelectState extends State<MapSelect> {
+class _MapSelectEditState extends State<MapSelectEdit> {
   final map = GlobalKey<LongdoMapState>();
   final GlobalKey<ScaffoldMessengerState> messenger =
       GlobalKey<ScaffoldMessengerState>();
@@ -40,7 +43,6 @@ class _MapSelectState extends State<MapSelect> {
   List<dynamic> _num = [0, 0, 0, 0];
   int _currentValue = 0;
   double bottom_list = 15;
-  FocusScopeNode _focusScopeNode = FocusScopeNode();
   TextEditingController _controller = TextEditingController();
   TextEditingController _controller2 = TextEditingController();
   TextEditingController _controller3 = TextEditingController();
@@ -51,131 +53,11 @@ class _MapSelectState extends State<MapSelect> {
   FocusNode _focusNode2 = FocusNode();
   FocusNode _focusNode3 = FocusNode();
   FocusNode _focusNode4 = FocusNode();
-  late bool isCheckedTutorial;
+
   void _toggleDialog() {
     setState(() {
       _isDialogVisible = !_isDialogVisible;
     });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    // showTutorial
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
-      showTutorial();
-    });
-  }
-
-  void showTutorial() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    // prefs.setBool('isCheckedTutorial', false);
-    isCheckedTutorial = prefs.getBool('isCheckedTutorial') ?? false;
-    isCheckedTutorial == false
-        ? QuickAlert.show(
-            context: context,
-            type: QuickAlertType.info,
-            title: 'คำแนะนำการใช้งาน',
-            confirmBtnText: 'ตกลง',
-            confirmBtnColor: Colors.green,
-            widget: StatefulBuilder(
-              builder: (BuildContext context, StateSetter setState) {
-                return Container(
-                  alignment: Alignment.center,
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            width: 50,
-                            height: 50,
-                            child: Icon(
-                              Icons.list,
-                              color: Colors.green,
-                            ),
-                          ),
-                          SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              'รายการสถานที่ที่เลือก',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Container(
-                            width: 50,
-                            height: 50,
-                            child: Icon(
-                              Icons.my_location_rounded,
-                              color: Colors.yellow,
-                            ),
-                          ),
-                          SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              'ตำแหน่งปัจจุบันของคุณ',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Container(
-                            width: 50,
-                            height: 50,
-                            child: Icon(
-                              Icons.search,
-                              color: Colors.red,
-                            ),
-                          ),
-                          SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              'ค้นหาสถานที่',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      CheckboxListTile(
-                        title: Text('ไม่ต้องแสดงอีก'),
-                        value: isCheckedTutorial,
-                        checkColor: Colors.white,
-                        fillColor: MaterialStateProperty.resolveWith((states) {
-                          if (states.contains(MaterialState.selected)) {
-                            return Colors.green;
-                          }
-                          return Colors.white;
-                        }),
-                        onChanged: (bool? value) {
-                          setState(() {
-                            isCheckedTutorial = value!;
-                            prefs.setBool(
-                                'isCheckedTutorial', isCheckedTutorial);
-                            // print(isCheckedTutorial);
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          )
-        : null;
   }
 
   Future<Position> _determinePosition() async {
@@ -823,9 +705,11 @@ class _MapSelectState extends State<MapSelect> {
   Future<void> getTripData() async {
     TripModel trip = Provider.of<TripModel>(context, listen: false);
     // print(trip.trip[0]['locations'][widget.idx]);
+    print("getTripData ${trip.trip[0]['locations'][widget.idx]}");
     trip.trip[0]['locations'][widget.idx].forEach((element) {
       add_mark(element['lat'], element['lon']);
       dataMark.add(element);
+      // print("element ${element}");
     });
   }
 
@@ -1063,377 +947,6 @@ class _MapSelectState extends State<MapSelect> {
           Navigator.of(context).pop();
         }
       },
-    );
-  }
-
-  void _showmsgQuickAlert(String title, String msg, QuickAlertType type) {
-    QuickAlert.show(
-      context: context,
-      type: type,
-      title: title,
-      text: msg,
-      confirmBtnText: 'ตกลง',
-    );
-  }
-
-  Future<void> fetchData(lon, lat) async {
-    print("lat: ${lat} lon: ${lon}");
-    var apiKey = "804903bb8f1b3b154a6f11b156adaf62";
-    final url = Uri.parse(
-        'https://api.longdo.com/POIService/json/search?key=${apiKey}&lon=${lon}&lat=${lat}&limit=20&span=40km');
-    final response = await http.get(url);
-    if (response.statusCode == 200) {
-      final jsonData = json.decode(response.body);
-      var lotlat = jsonData['data'].map((e) => {
-            "lat": e['lat'].toStringAsFixed(4),
-            "lon": e['lon'].toStringAsFixed(4),
-          });
-      var lotlats = jsonData['data'].map((e) => {
-            "lat": e['lat'].toStringAsFixed(4),
-            "lon": e['lon'].toStringAsFixed(5),
-          });
-      print(lat.toStringAsFixed(4) + ' ' + lon.toStringAsFixed(4));
-      print(lat.toStringAsFixed(4) + ' ' + lon.toStringAsFixed(6));
-      print(lotlat);
-      print(lotlats);
-      dynamic datax = [];
-      jsonData['data'].forEach((element) {
-        if (element['lat'].toStringAsFixed(4) == lat.toStringAsFixed(4) &&
-            element['lon'].toStringAsFixed(4) == lon.toStringAsFixed(4)) {
-          datax.add(element);
-        }
-      });
-      // print( is List ? true : false);
-      print(datax.length);
-      if (datax.length > 0) {
-        if (dataMark.length == 0) {
-          confirmAddmark((result) {
-            if (result) {
-              dataMark.add(datax[0]);
-              mapModel maplist = Provider.of<mapModel>(context, listen: false);
-              maplist.add_map(datax[0]);
-              TripModel trip = Provider.of<TripModel>(context, listen: false);
-              setState(() {
-                trip.trip[0]['locations'][widget.idx].add(datax[0]);
-                trip.print_trip();
-                widget.callback();
-              });
-              context.read<mapModel>().get_map.forEach((element) {
-                print("maplist ${element['name']}");
-              });
-
-              setState(() {
-                messenger.currentState?.showSnackBar(
-                  SnackBar(
-                    content: Text(datax[0]['name'] + " ถูกเพิ่มแล้ว"),
-                  ),
-                );
-                dataMark = dataMark;
-              });
-              add_mark(datax[0]['lat'], datax[0]['lon']);
-            }
-          });
-        } else {
-          var check =
-              dataMark.where((element) => element['name'] == datax[0]['name']);
-          print(check.length);
-          if (check.length == 0) {
-            confirmAddmark((result) {
-              if (result) {
-                setState(() {
-                  messenger.currentState?.showSnackBar(
-                    SnackBar(
-                      content: Text(datax[0]['name'] + " ถูกเพิ่มแล้ว"),
-                    ),
-                  );
-                  dataMark.add(datax[0]);
-                  mapModel maplist =
-                      Provider.of<mapModel>(context, listen: false);
-                  TripModel trip =
-                      Provider.of<TripModel>(context, listen: false);
-                  setState(() {
-                    trip.trip[0]['locations'][widget.idx].add(datax[0]);
-                    trip.print_trip();
-                    widget.callback();
-                    print(trip.trip[0]['locations'][widget.idx][0]['id']);
-                  });
-                  maplist.add_map(datax[0]);
-                  context.read<mapModel>().get_map.forEach((element) {
-                    print("maplist ${element['name']}");
-                  });
-                });
-                // set_location(datax[0]['lat'], datax[0]['lon']);
-                add_mark(datax[0]['lat'], datax[0]['lon']);
-              }
-            });
-          } else {
-            print("มีข้อมูลแล้ว");
-            _showmsgQuickAlert(
-                "แจ้งเตือน", "มีข้อมูลนี้อยู่แล้ว", QuickAlertType.error);
-          }
-        }
-      } else {
-        setState(() {
-          messenger.currentState?.showSnackBar(
-            SnackBar(
-              content: Text("ไม่พบข้อมูล"),
-            ),
-          );
-        });
-      }
-    } else {
-      throw Exception('Failed to load data');
-    }
-  }
-
-  void add_mark(lat, lon) {
-    print("add_mark ${lat} ${lon}");
-    mark = map.currentState?.LongdoObject(
-      "Marker",
-      args: [
-        {
-          "lon": lon,
-          "lat": lat,
-        },
-      ],
-    );
-    if (mark != null) {
-      map.currentState?.call("Overlays.add", args: [mark!]);
-    }
-  }
-
-  void remove_mark(index) async {
-    print("remove ${index}");
-    var x = await map.currentState?.call("Overlays.list");
-    var xd = jsonDecode(x.toString());
-    print(xd[index]);
-    map.currentState?.call("Overlays.remove", args: [xd[index]]);
-    mapModel maplist = Provider.of<mapModel>(context, listen: false);
-    maplist.remove_map(dataMark[index]);
-    print("maplist XD ${context.read<mapModel>().get_map}");
-    setState(() {
-      dataMark.removeAt(index);
-    });
-  }
-
-  String formatDateTime(String time) {
-    // time = "00:30";
-    var hour = time.substring(0, 2);
-    var minute = time.substring(3, time.length);
-    // hour.replaceAll("0", "2");
-    if (minute == "00" && hour == "00") {
-      return "เที่ยววันนี้";
-    }
-    if (minute.startsWith("0")) {
-      minute = minute.substring(1, minute.length);
-    }
-    if (hour == "00") {
-      hour = "";
-      return "${minute} นาที";
-    } else if (hour[0] == "0") {
-      hour = hour[1];
-      return "${hour} ชั่วโมง ${minute} นาที";
-    } else {
-      return "${hour} ชั่วโมง ${minute} นาที";
-    }
-  }
-
-  Future<void> Suggest_location(String tag, StateSetter setState) async {
-    var apiKey = "804903bb8f1b3b154a6f11b156adaf62";
-    var my_location = await _determinePosition();
-    var lat = my_location.latitude;
-    var lon = my_location.longitude;
-    var span = "50km";
-    final url = Uri.parse(
-        'https://api.longdo.com/POIService/json/search?key=${apiKey}&lon=${lon}&lat=${lat}&limit=20&tag=${tag}&span=${span}');
-    final response = await http.get(url);
-    if (response.statusCode == 200) {
-      final jsonData = json.decode(response.body);
-      // ใช้ setState จาก StatefulBuilder เพื่ออัพเดท UI
-      print(jsonData['data']);
-      setState(() {
-        dataSearch = jsonData['data'];
-      });
-    }
-  }
-
-  Widget _buildCustomDialog() {
-    TripModel trip = Provider.of<TripModel>(context, listen: false);
-    List<dynamic> data = trip.trip[0]['locations'][widget.idx];
-
-    return Center(
-      child: Container(
-        padding: EdgeInsets.only(
-          top: 20,
-          left: 20,
-          right: 20,
-          bottom: 20,
-        ),
-        width: MediaQuery.of(context).size.width * 0.9,
-        height: 550,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 20,
-              offset: Offset(0, 6),
-            )
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'รายการสถานที่ที่ต้องการไป',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFFC70039),
-              ),
-            ),
-            Expanded(
-              child: ReorderableListView.builder(
-                onReorder: (oldIndex, newIndex) {
-                  setState(() {
-                    if (newIndex > oldIndex) {
-                      newIndex -= 1;
-                    }
-                    final item = data.removeAt(oldIndex);
-                    final item_activities_time = trip.trip[0]['activities_time']
-                            [widget.idx]
-                        .removeAt(oldIndex);
-                    data.insert(newIndex, item);
-                    trip.trip[0]['activities_time'][widget.idx]
-                        .insert(newIndex, item_activities_time);
-                    // trip.print_trip();
-                  });
-                },
-                itemCount: data.length,
-                itemBuilder: (context, index) {
-                  return Container(
-                    key: Key(data[index]['name']),
-                    margin: EdgeInsets.only(bottom: bottom_list),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.2),
-                          spreadRadius: 1,
-                          blurRadius: 7,
-                          offset: Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: ListTile(
-                      subtitle: Text(
-                        'เวลาที่ต้องการอยู่ ${formatDateTime(trip.trip[0]['activities_time'][widget.idx][index]['time'])} \n ค่าใช้จ่าย ${trip.trip[0]['activities_time'][widget.idx][index]['money']} บาท',
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 10,
-                        ),
-                      ),
-                      leading: Listener(
-                        onPointerMove: (event) {
-                          print("onPointerMove");
-                          setState(() {
-                            bottom_list = 0;
-                          });
-                        },
-                        onPointerUp: (event) {
-                          print("onPointerUp");
-                          setState(() {
-                            bottom_list = 15;
-                          });
-                        },
-                        child: ReorderableDragStartListener(
-                          index: index,
-                          child: CircleAvatar(
-                            backgroundColor: Color(0xFFC70039),
-                            child: IconButton(
-                              icon:
-                                  Icon(Icons.location_on, color: Colors.white),
-                              onPressed: () {
-                                map.currentState?.call("location", args: [
-                                  {
-                                    "lon": data[index]['lon'],
-                                    "lat": data[index]['lat'],
-                                  }
-                                ]);
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            padding: EdgeInsets.all(0),
-                            icon: Icon(Icons.edit, color: Colors.blue),
-                            onPressed: () {
-                              confirmeditMark(index, (result) {
-                                if (result) {
-                                  print(result);
-                                  //close keyboard
-                                  _focusScopeNode.unfocus();
-                                }
-                              });
-                            },
-                            style: IconButton.styleFrom(
-                              minimumSize: Size(10, 10),
-                            ),
-                          ),
-                          IconButton(
-                            icon: Icon(Icons.delete, color: Colors.red),
-                            onPressed: () {
-                              remove_mark(index);
-                              trip.trip[0]['locations'][widget.idx]
-                                  .removeAt(index);
-                              trip.print_trip();
-                              widget.callback();
-                            },
-                          ),
-                        ],
-                      ),
-                      title: Text(
-                        '${data[index]['name']}',
-                        style: TextStyle(
-                          color: Color(0xFF141E46),
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            SizedBox(height: 10),
-            Container(
-              width: double.infinity,
-              // height: 50,
-              alignment: Alignment.topRight,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFFC70039),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
-                  ),
-                  padding: EdgeInsets.all(10),
-                  minimumSize: Size(20, 20),
-                ),
-                onPressed: _toggleDialog,
-                child: Icon(
-                  Icons.close,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 
@@ -1678,12 +1191,382 @@ class _MapSelectState extends State<MapSelect> {
             trip.trip[0]['activities_time'][widget.idx][idx] = {
               "time": time,
               "money": money,
+              "success": false,
             };
           });
           onResult(true);
           Navigator.of(context).pop();
         }
       },
+    );
+  }
+
+  void _showmsgQuickAlert(String title, String msg, QuickAlertType type) {
+    QuickAlert.show(
+      context: context,
+      type: type,
+      title: title,
+      text: msg,
+      confirmBtnText: 'ตกลง',
+    );
+  }
+
+  Future<void> fetchData(lon, lat) async {
+    print("lat: ${lat} lon: ${lon}");
+    var apiKey = "804903bb8f1b3b154a6f11b156adaf62";
+    final url = Uri.parse(
+        'https://api.longdo.com/POIService/json/search?key=${apiKey}&lon=${lon}&lat=${lat}&limit=20&span=40km');
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      final jsonData = json.decode(response.body);
+      var lotlat = jsonData['data'].map((e) => {
+            "lat": e['lat'].toStringAsFixed(4),
+            "lon": e['lon'].toStringAsFixed(4),
+          });
+      var lotlats = jsonData['data'].map((e) => {
+            "lat": e['lat'].toStringAsFixed(4),
+            "lon": e['lon'].toStringAsFixed(5),
+          });
+      print(lat.toStringAsFixed(4) + ' ' + lon.toStringAsFixed(4));
+      print(lat.toStringAsFixed(4) + ' ' + lon.toStringAsFixed(6));
+      print(lotlat);
+      print(lotlats);
+      dynamic datax = [];
+      jsonData['data'].forEach((element) {
+        if (element['lat'].toStringAsFixed(4) == lat.toStringAsFixed(4) &&
+            element['lon'].toStringAsFixed(4) == lon.toStringAsFixed(4)) {
+          datax.add(element);
+        }
+      });
+      // print( is List ? true : false);
+      print(datax.length);
+      if (datax.length > 0) {
+        if (dataMark.length == 0) {
+          confirmAddmark((result) {
+            if (result) {
+              dataMark.add(datax[0]);
+              mapModel maplist = Provider.of<mapModel>(context, listen: false);
+              maplist.add_map(datax[0]);
+              TripModel trip = Provider.of<TripModel>(context, listen: false);
+              setState(() {
+                trip.trip[0]['locations'][widget.idx].add(datax[0]);
+                trip.print_trip();
+                widget.callback();
+              });
+              context.read<mapModel>().get_map.forEach((element) {
+                print("maplist ${element['name']}");
+              });
+
+              setState(() {
+                messenger.currentState?.showSnackBar(
+                  SnackBar(
+                    content: Text(datax[0]['name'] + " ถูกเพิ่มแล้ว"),
+                  ),
+                );
+                dataMark = dataMark;
+              });
+              add_mark(datax[0]['lat'], datax[0]['lon']);
+            }
+          });
+        } else {
+          // print("more data maker");
+          print("more data maker");
+          var check =
+              dataMark.where((element) => element['name'] == datax[0]['name']);
+          print(check.length);
+          if (check.length == 0) {
+            confirmAddmark((result) {
+              if (result) {
+                setState(() {
+                  messenger.currentState?.showSnackBar(
+                    SnackBar(
+                      content: Text(datax[0]['name'] + " ถูกเพิ่มแล้ว"),
+                    ),
+                  );
+                  dataMark.add(datax[0]);
+                  mapModel maplist =
+                      Provider.of<mapModel>(context, listen: false);
+                  TripModel trip =
+                      Provider.of<TripModel>(context, listen: false);
+                  setState(() {
+                    trip.trip[0]['locations'][widget.idx].add(datax[0]);
+                    trip.print_trip();
+                    widget.callback();
+                    print(trip.trip[0]['locations'][widget.idx][0]['id']);
+                  });
+                  maplist.add_map(datax[0]);
+                  context.read<mapModel>().get_map.forEach((element) {
+                    print("maplist ${element['name']}");
+                  });
+                });
+                // set_location(datax[0]['lat'], datax[0]['lon']);
+                add_mark(datax[0]['lat'], datax[0]['lon']);
+              }
+            });
+          } else {
+            print("มีข้อมูลแล้ว");
+            _showmsgQuickAlert(
+                "แจ้งเตือน", "มีข้อมูลนี้อยู่แล้ว", QuickAlertType.error);
+          }
+        }
+      } else {
+        setState(() {
+          messenger.currentState?.showSnackBar(
+            SnackBar(
+              content: Text("ไม่พบข้อมูล"),
+            ),
+          );
+        });
+      }
+    } else {
+      throw Exception('Failed to load data');
+    }
+  }
+
+  void add_mark(lat, lon) {
+    print("add_mark ${lat} ${lon}");
+    mark = map.currentState?.LongdoObject(
+      "Marker",
+      args: [
+        {
+          "lon": lon,
+          "lat": lat,
+        },
+      ],
+    );
+    if (mark != null) {
+      map.currentState?.call("Overlays.add", args: [mark!]);
+    }
+  }
+
+  void remove_mark(index) async {
+    print("remove ${index}");
+    var x = await map.currentState?.call("Overlays.list");
+    var xd = jsonDecode(x.toString());
+    print(xd[index]);
+    map.currentState?.call("Overlays.remove", args: [xd[index]]);
+    mapModel maplist = Provider.of<mapModel>(context, listen: false);
+    maplist.remove_map(dataMark[index]);
+    print("maplist XD ${context.read<mapModel>().get_map}");
+    setState(() {
+      dataMark.removeAt(index);
+    });
+  }
+
+  String formatDateTime(String time) {
+    // time = "00:30";
+    var hour = time.substring(0, 2);
+    var minute = time.substring(3, time.length);
+    // hour.replaceAll("0", "2");
+    if (hour == "00") {
+      hour = "";
+      return "${minute} นาที";
+    } else if (hour[0] == "0") {
+      hour = hour[1];
+      return "${hour} ชั่วโมง ${minute} นาที";
+    } else {
+      return "${hour} ชั่วโมง ${minute} นาที";
+    }
+  }
+
+  Future<void> Suggest_location(String tag, StateSetter setState) async {
+    var apiKey = "804903bb8f1b3b154a6f11b156adaf62";
+    var my_location = await _determinePosition();
+    var lat = my_location.latitude;
+    var lon = my_location.longitude;
+    var span = "50km";
+    final url = Uri.parse(
+        'https://api.longdo.com/POIService/json/search?key=${apiKey}&lon=${lon}&lat=${lat}&limit=20&tag=${tag}&span=${span}');
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      final jsonData = json.decode(response.body);
+      // ใช้ setState จาก StatefulBuilder เพื่ออัพเดท UI
+      print(jsonData['data']);
+      setState(() {
+        dataSearch = jsonData['data'];
+      });
+    }
+  }
+
+  Widget _buildCustomDialog() {
+    TripModel trip = Provider.of<TripModel>(context, listen: false);
+    List<dynamic> data = trip.trip[0]['locations'][widget.idx];
+    // print("data ${data}");
+    return Center(
+      child: Container(
+        padding: EdgeInsets.only(
+          top: 10,
+          left: 10,
+          right: 10,
+          bottom: 10,
+        ),
+        width: MediaQuery.of(context).size.width * 0.9,
+        height: 550,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 20,
+              offset: Offset(0, 6),
+            )
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'รายการสถานที่ที่ต้องการไป',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFFC70039),
+              ),
+            ),
+            Expanded(
+              child: ReorderableListView.builder(
+                itemCount: data.length,
+                onReorder: (oldIndex, newIndex) {
+                  setState(() {
+                    if (newIndex > oldIndex) {
+                      newIndex -= 1;
+                    }
+                    final item = data.removeAt(oldIndex);
+                    final item_activities_time = trip.trip[0]['activities_time']
+                            [widget.idx]
+                        .removeAt(oldIndex);
+                    data.insert(newIndex, item);
+                    trip.trip[0]['activities_time'][widget.idx]
+                        .insert(newIndex, item_activities_time);
+                    // trip.print_trip();
+                  });
+                },
+                itemBuilder: (BuildContext context, int index) {
+                  return Container(
+                    key: Key('$index'),
+                    margin: EdgeInsets.only(
+                      bottom: bottom_list,
+                      // left: 40,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 5,
+                          offset: Offset(0, 6),
+                        ),
+                      ],
+                    ),
+                    child: ListTile(
+                      contentPadding: EdgeInsets.all(5),
+                      subtitle: Text(
+                        'เวลาที่ต้องการอยู่ ${formatDateTime(trip.trip[0]['activities_time'][widget.idx][index]['time'])} \n ค่าใช้จ่าย ${trip.trip[0]['activities_time'][widget.idx][index]['money']} บาท',
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 10,
+                        ),
+                      ),
+                      leading: Listener(
+                        onPointerMove: (event) {
+                          print("onPointerMove");
+                          setState(() {
+                            bottom_list = 0;
+                          });
+                        },
+                        onPointerUp: (event) {
+                          print("onPointerUp");
+                          setState(() {
+                            bottom_list = 15;
+                          });
+                        },
+                        child: ReorderableDragStartListener(
+                          index: index,
+                          child: CircleAvatar(
+                            backgroundColor: Color(0xFFC70039),
+                            child: IconButton(
+                              icon:
+                                  Icon(Icons.location_on, color: Colors.white),
+                              onPressed: () {
+                                map.currentState?.call("location", args: [
+                                  {
+                                    "lon": data[index]['lon'],
+                                    "lat": data[index]['lat'],
+                                  }
+                                ]);
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.edit, color: Colors.blue),
+                            onPressed: () {
+                              confirmeditMark(index, (result) {
+                                if (result) {
+                                  print(result);
+                                }
+                              });
+                            },
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.delete, color: Colors.red),
+                            onPressed: () {
+                              remove_mark(index);
+                              trip.trip[0]['locations'][widget.idx]
+                                  .removeAt(index);
+                              trip.print_trip();
+                              widget.callback();
+                              setState(() {
+                                trip.trip[0]['activities_time'][widget.idx]
+                                    .removeAt(index);
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                      title: Text(
+                        '${data[index]['name']}',
+                        style: TextStyle(
+                          color: Color(0xFF141E46),
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            SizedBox(height: 10),
+            Container(
+              width: double.infinity,
+              // height: 50,
+              alignment: Alignment.topRight,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFFC70039),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  padding: EdgeInsets.all(10),
+                  minimumSize: Size(20, 20),
+                ),
+                onPressed: _toggleDialog,
+                child: Icon(
+                  Icons.close,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

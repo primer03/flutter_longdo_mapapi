@@ -143,7 +143,7 @@ class _EditProfileState extends State<EditProfile> {
       ],
       uiSettings: [
         AndroidUiSettings(
-          toolbarTitle: 'Cropper',
+          toolbarTitle: 'แก้ไขรูปภาพ',
           toolbarColor: Color.fromARGB(255, 197, 13, 0),
           toolbarWidgetColor: Colors.white,
           initAspectRatio: CropAspectRatioPreset.original,

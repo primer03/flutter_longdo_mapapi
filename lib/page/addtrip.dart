@@ -30,6 +30,18 @@ class _TripPageState extends State<TripPage> {
   bool _Ispublice = false;
   List<Map<String, dynamic>> _userData = [];
   List<Map<String, dynamic>> _trip_friend = [];
+  String _selectedTripType = 'การเดินทางท่องเที่ยว';
+  List<String> _trip_type = [
+    "การเดินทางท่องเที่ยว",
+    "การเดินทางทางธุรกิจ",
+    "การเดินทางทางการศึกษา",
+    "การเดินทางทางการแพทย์",
+    "การเดินทางทางอนุรักษ์",
+    "การเดินทางทางศาสนา",
+    "การเดินทางทางกีฬา",
+    "การเดินทางทางวัฒนธรรม",
+    "การเดินทางทางธรรมชาติ",
+  ];
 
   Future _selectTime(int index) async {
     DateTime daytime = _dates[index]!;
@@ -89,12 +101,6 @@ class _TripPageState extends State<TripPage> {
       setState(() {
         _times[index] = time;
         _isSelected[index] = true;
-        // print('Selected time: ${_times}');
-        // for (int i = 0; i < _isSelected.length; i++) {
-        //   if (_isSelected[i] == true) {
-        //     print('Selected time: ${_times[i]}');
-        //   }
-        // }
         print('Selected time: ${_times[index]}');
       });
       print('Selected time: ${_times}');
@@ -203,6 +209,56 @@ class _TripPageState extends State<TripPage> {
                         ),
                         borderRadius: BorderRadius.circular(10),
                       ),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Container(
+                    width: double.infinity,
+                    child: Text(
+                      'ประเภททริป',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF141E46),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Container(
+                    padding: EdgeInsets.only(left: 10),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Color(0xFF141E46),
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    width: double.infinity,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: DropdownButton<String>(
+                            isExpanded: true,
+                            value: _selectedTripType,
+                            items: _trip_type.map((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            underline: Container(
+                              height: 0,
+                              color: Colors.transparent,
+                            ),
+                            onChanged: (String? value) {
+                              setState(() {
+                                _selectedTripType = value!;
+                              });
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   SizedBox(height: 10),
@@ -644,6 +700,7 @@ class _TripPageState extends State<TripPage> {
               _dates.map((date) => date!.toIso8601String()).toList());
           prefs.setStringList('trip_times',
               _times.map((time) => time.format(context)).toList());
+          prefs.setString('trip_type', _selectedTripType);
           Navigator.push(context, MaterialPageRoute(builder: (context) {
             return LocationList();
           }));
@@ -665,6 +722,7 @@ class _TripPageState extends State<TripPage> {
             'activities_time':
                 List.generate(_dates.length, (index) => [] as List<dynamic>),
             'friend_email': trip_friend_email,
+            'trip_type': _selectedTripType,
           });
         },
         //next page
