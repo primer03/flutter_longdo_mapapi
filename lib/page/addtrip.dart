@@ -136,11 +136,13 @@ class _TripPageState extends State<TripPage> {
     List<Map<String, dynamic>> matches = [];
     _userData.forEach((user) {
       if (user['user_name'].toLowerCase().contains(query.toLowerCase())) {
-        matches.add({
-          'user_name': user['user_name'],
-          'user_img': user['user_img'],
-          'user_email': user['user_email'],
-        });
+        if (user['user_email'] != "") {
+          matches.add({
+            'user_name': user['user_name'],
+            'user_img': user['user_img'],
+            'user_email': user['user_email'],
+          });
+        }
       }
     });
     print(matches);

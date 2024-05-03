@@ -103,7 +103,7 @@ class _LocationListState extends State<LocationList> {
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFFFC70039),
+                color: Color(0xFF141E46),
               ),
             ),
             SizedBox(height: 20),
@@ -149,11 +149,12 @@ class _LocationListState extends State<LocationList> {
                         borderRadius: BorderRadius.circular(20),
                         child: Container(
                           decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topRight,
-                              end: Alignment.bottomLeft,
-                              colors: [Color(0xFFFC70039), Color(0xFFFFAFBD)],
-                            ),
+                            color: Color(0xFF141E46),
+                            // gradient: LinearGradient(
+                            //   begin: Alignment.topRight,
+                            //   end: Alignment.bottomLeft,
+                            //   colors: [Color(0xFFFC70039), Color(0xFFFFAFBD)],
+                            // ),
                           ),
                           child: Stack(
                             alignment: Alignment.center,
@@ -164,21 +165,21 @@ class _LocationListState extends State<LocationList> {
                                   Icon(
                                     Icons.location_on_rounded,
                                     size: 48,
-                                    color: Colors.white,
+                                    color: Color(0xFFFFF5E0),
                                   ),
                                   Text(
                                     'วันที่ ${dates[index]!.day}/${dates[index]!.month}/${dates[index]!.year}',
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.white,
+                                      color: Color(0xFFFFF5E0),
                                     ),
                                   ),
                                   Text(
                                     'เวลา ${formatTimeOfDay(times[index])}',
                                     style: TextStyle(
                                       fontSize: 14,
-                                      color: Colors.white.withOpacity(0.9),
+                                      color: Color(0xFFFFF5E0),
                                     ),
                                   ),
                                 ],
@@ -209,7 +210,7 @@ class _LocationListState extends State<LocationList> {
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
-                                      color: Color(0xFFFC70039),
+                                      color: Color(0xFF141E46),
                                     ),
                                   ),
                                 ),
@@ -291,7 +292,7 @@ class _LocationListState extends State<LocationList> {
           }
         },
         child: Icon(Icons.check),
-        backgroundColor: Color(0xFFFC70039),
+        backgroundColor: Colors.green,
         foregroundColor: Colors.white,
       ),
     );

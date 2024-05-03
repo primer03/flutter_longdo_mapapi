@@ -314,7 +314,6 @@ class _routingtripState extends State<routingtrip> {
           bottom: 10,
         ),
         width: MediaQuery.of(context).size.width * 0.9,
-        height: 550,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
