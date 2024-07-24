@@ -47,7 +47,7 @@ class _OilpageState extends State<Oilpage> {
       'img': 'assets/images/oil/oil3.jpg',
     },
     {
-      'name': 'ดีเซลพรีเมียม B7',
+      'name': 'Super Power Diesel',
       'img': 'assets/images/oil/oil9.jpg',
     },
     {
@@ -245,7 +245,14 @@ class _OilpageState extends State<Oilpage> {
         }
       });
     });
-    print(oil);
+    //
+    oil.forEach((element) {
+      print(element['Product']);
+      print(element['Price']);
+      print(element['img']);
+    });
+    print(oillogo.length);
+    // print(oillogo);
     setState(() {
       dataOilDistrict = oil as List<Map<String, dynamic>>;
       checkBangkok = true;
@@ -278,7 +285,7 @@ class _OilpageState extends State<Oilpage> {
   @override
   void initState() {
     super.initState();
-    getOil();
+    getOil(); //3456728
   }
 
   @override
@@ -642,7 +649,11 @@ class _OilpageState extends State<Oilpage> {
                                 padding: const EdgeInsets.all(8.0),
                                 child: Column(
                                   children: List.generate(
-                                    oillogo.length,
+                                    checkBangkok
+                                        ? dataOilDistrict.length
+                                        : dataOilDistrict.length == 0
+                                            ? oillogo.length
+                                            : dataOilDistrict[0]['Data'].length,
                                     (index) => Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,

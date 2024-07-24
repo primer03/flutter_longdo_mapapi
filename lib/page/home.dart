@@ -69,7 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
             },
             child: Text('Get Location'),
           ),
-          Text('$latlon', style: Theme.of(context).textTheme.headline6),
+          Text('$latlon', style: Theme.of(context).textTheme.headlineMedium),
         ])));
   }
 }
